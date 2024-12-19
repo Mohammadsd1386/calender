@@ -19,11 +19,11 @@ import  PersianCalendar  from 'persian-calender';
 const App = () => {
   return (
     <PersianCalendar
-      darkMode={false}
-      responsive={false} 
+      darkMode={false} //default false
+      responsive={false} //default true
       onChange={(date) => console.log(date)} 
-      animate={true}
-      inputStyle={{ width: '100px', height: '50px' }}
+      animate={true} //default false 
+      inputStyle={{ width: '100px', height: '50px' }} //default no style
       />
   );
 };
