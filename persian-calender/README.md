@@ -14,7 +14,7 @@ npm install --save persian-calender
 
 ```jsx
 import React from 'react';
-import { PersianCalendar } from 'persian-calender';
+import  PersianCalendar  from 'persian-calender';
 
 const App = () => {
   return (
@@ -35,5 +35,3 @@ export default App;
 ## License
 
 MIT © [Mohammadsd](https://github.com/Mohammadsd)
-
- 

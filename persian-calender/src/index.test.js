@@ -1,6 +1,6 @@
-import { PersianCalendar } from '.'
+import  PersianCalendar  from '.'
 
-describe('ExampleComponent', () => {
+describe('PersianCalendar', () => {
   it('is truthy', () => {
     expect(PersianCalendar).toBeTruthy()
   })
