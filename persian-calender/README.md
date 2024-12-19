@@ -20,10 +20,10 @@ import 'persian-calender/dist/index.css' // add font
 const App = () => {
   return (
     <PersianCalendar
-      darkMode={false} //default false
-      responsive={false} //default true
+      darkMode={boolean} //default false
+      responsive={boolean} //default true
       onChange={(date) => console.log(date)} 
-      animate={true} //default false 
+      animate={boolean} //default false 
       inputStyle={{ width: '100px', height: '50px' }} //default no style
       />
   );
