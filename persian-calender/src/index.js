@@ -341,4 +341,4 @@ const PersianCalendar = ({
   );
 };
 
-export default PersianCalendar;
+export {PersianCalendar};
