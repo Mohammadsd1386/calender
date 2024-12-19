@@ -4,13 +4,12 @@ import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
-// اضافه کردن فونت دلخواه
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: 'IranSans';
-    src: url('../src/assets/IRANSansXFaNum-Medium.ttf') 
+    src: url('../dist/IRANSansXFaNum-Medium-Bwk4ZRX1.ttf') 
   };
   
   body {
@@ -27,7 +26,7 @@ const CalendarContainer = styled(motion.div)`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
   color: ${(props) => (props.darkMode ? "#fff" : "#333")};
-  z-index: 100; /* اضافه کردن z-index برای نمایش در بالا */
+  z-index: 100; 
 `;
 
 const YearMonthSelector = styled.div`
@@ -257,7 +256,7 @@ const PersianCalendar = ({
 
   return (
     <div>
-      <GlobalStyle /> {/* استفاده از فونت */}
+      <GlobalStyle /> 
       <CalendarInput
         ref={datePicker}
         value={selectedDate}
