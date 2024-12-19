@@ -5,13 +5,13 @@ import './App.css'
 import PersianCalendar from './calender'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-<PersianCalendar
-  responsive={false} 
-  onChange={(date) => console.log(date)} 
-/>
+    <PersianCalendar
+      darkMode={false}
+      responsive={false} 
+      onChange={(date) => console.log(date)} 
+    />
 
   )
 }
