@@ -1,6 +1,6 @@
 {
   "name": "persian-calender",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "this pkg to Easy",
   "author": "Mohammadsd",
   "license": "MIT",
@@ -55,6 +55,8 @@
   ],
   "dependencies": {
     "date-fns-jalali": "^4.1.0-0",
-    "react-icons": "^5.4.0"
+    "framer-motion": "^11.15.0",
+    "react-icons": "^5.4.0",
+    "styled-components": "^6.1.13"
   }
 }

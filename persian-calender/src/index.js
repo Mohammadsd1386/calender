@@ -1,23 +1,182 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format, getDaysInMonth, getMonth, getYear, parse } from "date-fns-jalali";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
-import '../src/style.css'
+import styled from "styled-components";
+import { motion } from "framer-motion";
+
+const CalendarContainer = styled(motion.div)`
+  position: relative;
+  max-width: ${(props) => (props.responsive ? "100%" : "23rem")};
+  margin: 2rem auto;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
+  color: ${(props) => (props.darkMode ? "#fff" : "#333")};
+`;
+
+const YearMonthSelector = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  cursor: pointer;
+`;
+
+const SelectorButton = styled.button`
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background-color: ${(props) => (props.darkMode ? "#3a3a3a" : "#f0f0f0")};
+  &:hover {
+    background-color: ${(props) => (props.darkMode ? "#444" : "#ddd")};
+  }
+`;
+
+const MonthYearText = styled.span`
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0 -1.5rem;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+`;
+
+const DayCell = styled.div`
+  padding: 0.75rem;
+  margin-top: 5px;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  background-color: ${(props) =>
+    props.selected ? "#0B35E0" : "transparent"};
+  color: ${(props) => {
+    if (props.selected) {
+      return "#fff";
+    }
+    if (props.darkMode) {
+      return "#fff";
+    }
+    return "#000";
+  }};
+
+  &:hover {
+    background-color: ${(props) =>
+      props.selected ? "#0B35E0" : props.darkMode ? "#444" : "#e2e8f0"};
+    color: ${(props) =>
+      props.selected ? "#fff" : props.darkMode ? "#fff" : "#000"};
+  }
+`;
+
+const DateText = styled.div`
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #3182ce;
+`;
+
+const YearSelector = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 200px;
+  width: 80%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px); /* اضافه کردن blur */
+`;
+
+const YearOption = styled.div`
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  background-color: ${(props) => (props.darkMode ? "#333" : "#fff")};
+  &:hover {
+    background-color: ${(props) => (props.darkMode ? "#444" : "#f0f0f0")};
+  }
+`;
+
+const MonthSelector = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 200px;
+  width: 80%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px); /* اضافه کردن blur */
+`;
+
+const MonthOption = styled.div`
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  background-color: ${(props) => (props.darkMode ? "#333" : "#fff")};
+  &:hover {
+    background-color: ${(props) => (props.darkMode ? "#444" : "#f0f0f0")};
+  }
+`;
+
+const CalendarInput = styled.input`
+  padding: 0.5rem;
+  border: 1px solid ${(props) => (props.darkMode ? "#333" : "#ccc")};
+  border-radius: 0.5rem;
+  background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
+  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
 const PersianCalendar = ({
-  darkMode = false, 
-  value = null, 
-  onChange = () => {}, 
-  responsive = true, 
+  darkMode = false,
+  value = null,
+  onChange = () => {},
+  responsive = true,
+  animate = false,
+  inputStyle = '',
 }) => {
-  const [selectedDate, setSelectedDate] = useState(value);
-  const [viewingYear, setViewingYear] = useState(getYear(new Date())); 
-  const [viewingMonth, setViewingMonth] = useState(getMonth(new Date())); 
+  const gregorianDate = new Date();
+  const persianDate = format(gregorianDate, "yyyy/MM/dd");
+  const dayOfMonth = persianDate.split("/")[2];
+
+  const [selectedDate, setSelectedDate] = useState(
+    value || format(new Date(), "d MMMM yyyy")
+  );
+  const [viewingYear, setViewingYear] = useState(getYear(new Date()));
+  const [viewingMonth, setViewingMonth] = useState(getMonth(new Date()));
   const [showYearSelector, setShowYearSelector] = useState(false);
   const [showMonthSelector, setShowMonthSelector] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(Number(dayOfMonth));
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   const months = [
     "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-    "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"
+    "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
   ];
 
   const daysInMonth = (month, year) => {
@@ -26,17 +185,18 @@ const PersianCalendar = ({
   };
 
   const handleDateClick = (day) => {
-    setSelectedDay(day); 
+    setSelectedDay(day);
     const dateString = `${day} ${months[viewingMonth]} ${viewingYear}`;
     setSelectedDate(dateString);
 
     const gregorianDate = parse(
-      `${viewingYear}-${viewingMonth + 1}-${day}`, 
-      "yyyy-MM-dd", 
+      `${viewingYear}-${viewingMonth + 1}-${day}`,
+      "yyyy-MM-dd",
       new Date()
     );
-    
-    onChange(gregorianDate.toISOString());  
+
+    onChange(gregorianDate.toISOString());
+    setIsCalendarVisible(false); 
   };
 
   const years = Array.from({ length: 100 }, (_, i) => viewingYear - 50 + i);
@@ -59,111 +219,123 @@ const PersianCalendar = ({
     }
   };
 
+  const datePicker = useRef()
+
+  const checkPosition = () => {
+    const calendar = datePicker;
+    const rect = calendar.getBoundingClientRect();
+    const screenHeight = window.innerHeight;
+    if (rect.bottom > screenHeight) {
+      calendar.style.top = `${-rect.height}px`; 
+    }
+  };
+
   useEffect(() => {
     if (value) {
-      setSelectedDate(value); 
+      setSelectedDate(value);
     }
   }, [value]);
 
   return (
-    <div className={`relative ${responsive ? "max-w-full" : "max-w-xs"} mx-auto mt-10 p-4 rounded-xl shadow-lg ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
-      {showYearSelector && (
-        <div className="absolute top-0 left-0 right-0 h-full flex justify-center items-center z-10">
-          <div className="h-60 w-4/5 overflow-y-auto bg-white border rounded-lg shadow-lg">
-            <div className="flex flex-col items-center justify-center">
+    <div>
+      <CalendarInput
+        ref={datePicker}
+        value={selectedDate}
+        style={inputStyle}
+        darkMode={darkMode}
+        onClick={() => {
+          setIsCalendarVisible(true);
+          checkPosition();
+        }} 
+        readOnly 
+      />
+
+      {isCalendarVisible && (
+        <CalendarContainer
+          responsive={responsive}
+          darkMode={darkMode}
+          id="calendar"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: animate ? 0.3 : 0 }}
+        >
+          {showYearSelector && (
+            <YearSelector>
               {years.map((year) => (
-                <div
+                <YearOption
                   key={year}
-                  className="px-4 py-2 w-full cursor-pointer hover:bg-indigo-100 text-center"
+                  darkMode={darkMode}
                   onClick={() => {
                     setViewingYear(year);
                     setShowYearSelector(false);
                   }}
                 >
                   {year}
-                </div>
+                </YearOption>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
+            </YearSelector>
+          )}
 
-      {showMonthSelector && (
-        <div className="absolute top-0 left-0 right-0 h-full flex justify-center items-center z-10">
-          <div className="h-60 w-4/5 overflow-y-auto bg-white border rounded-lg shadow-lg">
-            <div className="flex flex-col items-center justify-center">
+          {showMonthSelector && (
+            <MonthSelector>
               {months.map((month, index) => (
-                <div
+                <MonthOption
                   key={month}
-                  className="px-4 py-2 w-full cursor-pointer hover:bg-indigo-100 text-center"
+                  darkMode={darkMode}
                   onClick={() => {
                     setViewingMonth(index);
                     setShowMonthSelector(false);
                   }}
                 >
                   {month}
-                </div>
+                </MonthOption>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
+            </MonthSelector>
+          )}
 
-      <div className="flex justify-between items-center mb-4 cursor-pointer">
-        <button
-          className="text-xl p-2 hover:bg-gray-200 rounded-full"
-          onClick={() => changeMonth("prev")}
-        >
-          <MdArrowBackIosNew />
-        </button>
+          <YearMonthSelector>
+            <SelectorButton darkMode={darkMode} onClick={() => changeMonth("prev")}>
+              <MdArrowBackIosNew />
+            </SelectorButton>
 
-        <span
-          className="text-lg font-semibold mr-[-55px]"
-          onClick={() => setShowYearSelector(true)}
-        >
-          {viewingYear}
-        </span>
-        <span
-          className="text-lg font-semibold"
-          onClick={() => setShowMonthSelector(true)}
-        >
-          {months[viewingMonth]} 
-        </span>
+            <MonthYearText onClick={() => setShowYearSelector(true)}>
+              {viewingYear}
+            </MonthYearText>
+            <MonthYearText onClick={() => setShowMonthSelector(true)}>
+              {months[viewingMonth]}
+            </MonthYearText>
 
-        <button
-          className="text-xl p-2 hover:bg-gray-200 rounded-full"
-          onClick={() => changeMonth("next")}
-        >
-          <MdArrowForwardIos />
-        </button>
-      </div>
+            <SelectorButton darkMode={darkMode} onClick={() => changeMonth("next")}>
+              <MdArrowForwardIos />
+            </SelectorButton>
+          </YearMonthSelector>
 
-      <div className="grid grid-cols-7 gap-1 mb-4 text-center text-sm font-semibold">
-        {["ش", "ی", "د", "س", "چ", "پ", "ج"].map((day) => (
-          <div key={day} className="py-1">{day}</div>
-        ))}
-      </div>
+          <Grid>
+            {["ش", "ی", "د", "س", "چ", "پ", "ج"].map((day) => (
+              <div key={day}>{day}</div>
+            ))}
+          </Grid>
 
-      <div className="grid grid-cols-7 gap-1">
-        {Array.from({ length: daysInMonth(viewingMonth, viewingYear) }).map((_, index) => {
-          const day = index + 1;
-          const isSelected = day === selectedDay;
-          return (
-            <div
-              key={day}
-              className={`text-center py-2 cursor-pointer rounded-lg ${isSelected ? 'bg-blue-500 text-white' : 'hover:bg-indigo-200'}`}
-              onClick={() => handleDateClick(day)}
-            >
-              {day}
-            </div>
-          );
-        })}
-      </div>
-
-      {selectedDate && (
-        <div className="mt-4 text-center text-blue-700 font-semibold">
-          تاریخ : {selectedDate}
-        </div>
+          <Grid>
+            {Array.from({ length: daysInMonth(viewingMonth, viewingYear) }).map(
+              (_, index) => {
+                const day = index + 1;
+                const isSelected = day === selectedDay;
+                return (
+                  <DayCell
+                    darkMode={darkMode}
+                    key={day}
+                    selected={isSelected}
+                    onClick={() => handleDateClick(day)}
+                  >
+                    {day}
+                  </DayCell>
+                );
+              }
+            )}
+          </Grid>
+        </CalendarContainer>
       )}
     </div>
   );
