@@ -42,7 +42,6 @@ const SelectorButton = styled.button`
   font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 50%;
-  background-color: ${(props) => (props.darkMode ? "#3a3a3a" : "#f0f0f0")};
   &:hover {
     background-color: ${(props) => (props.darkMode ? "#444" : "#ddd")};
   }
