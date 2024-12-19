@@ -4,6 +4,20 @@ import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
+// اضافه کردن فونت دلخواه
+import { createGlobalStyle } from "styled-components";
+
+const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: 'IranSans';
+    src: url('../src/assets/IRANSansXFaNum-Medium.ttf') 
+  };
+  
+  body {
+    font-family: IranSans;
+  }
+`;
+
 const CalendarContainer = styled(motion.div)`
   position: relative;
   max-width: ${(props) => (props.responsive ? "100%" : "23rem")};
@@ -13,6 +27,7 @@ const CalendarContainer = styled(motion.div)`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
   color: ${(props) => (props.darkMode ? "#fff" : "#333")};
+  z-index: 100; /* اضافه کردن z-index برای نمایش در بالا */
 `;
 
 const YearMonthSelector = styled.div`
@@ -94,7 +109,7 @@ const YearSelector = styled.div`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px); /* اضافه کردن blur */
+  backdrop-filter: blur(5px); 
 `;
 
 const YearOption = styled.div`
@@ -123,7 +138,7 @@ const MonthSelector = styled.div`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px); /* اضافه کردن blur */
+  backdrop-filter: blur(5px); 
 `;
 
 const MonthOption = styled.div`
@@ -173,6 +188,7 @@ const PersianCalendar = ({
   const [showMonthSelector, setShowMonthSelector] = useState(false);
   const [selectedDay, setSelectedDay] = useState(Number(dayOfMonth));
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+  const [calendarPosition, setCalendarPosition] = useState("bottom");
 
   const months = [
     "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
@@ -222,11 +238,14 @@ const PersianCalendar = ({
   const datePicker = useRef()
 
   const checkPosition = () => {
-    const calendar = datePicker;
+    const calendar = datePicker.current;
     const rect = calendar.getBoundingClientRect();
     const screenHeight = window.innerHeight;
+    
     if (rect.bottom > screenHeight) {
-      calendar.style.top = `${-rect.height}px`; 
+      setCalendarPosition("top");
+    } else {
+      setCalendarPosition("bottom");
     }
   };
 
@@ -238,6 +257,7 @@ const PersianCalendar = ({
 
   return (
     <div>
+      <GlobalStyle /> {/* استفاده از فونت */}
       <CalendarInput
         ref={datePicker}
         value={selectedDate}
@@ -259,6 +279,7 @@ const PersianCalendar = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: animate ? 0.3 : 0 }}
+          style={{ top: calendarPosition === "top" ? "auto" : "100%", bottom: calendarPosition === "top" ? "100%" : "auto" }}
         >
           {showYearSelector && (
             <YearSelector>
