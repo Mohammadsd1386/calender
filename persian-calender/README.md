@@ -14,25 +14,87 @@ npm install --save persian-calender
 
 ```jsx
 import React from 'react';
-import  PersianCalendar  from 'persian-calender';
-import 'persian-calender/dist/index.css' // add font
+import PersianCalendar from 'persian-calender';
+import 'persian-calender/dist/index.css'; // Import the font and styles
 
 const App = () => {
   return (
     <PersianCalendar
-      darkMode={boolean} //default false
-      responsive={boolean} //default true
-      onChange={(date) => console.log(date)} 
-      animate={boolean} //default false 
-      inputStyle={{ width: '100px', height: '50px' }} //default no style
-      />
+      darkMode={false} // Enable dark mode
+      responsive={true} // Make it responsive
+      onChange={(date) => console.log(date)} // Handle date selection
+      animate={true} // Enable animations
+      inputStyle={{ width: '100px', height: '50px' }} // Custom input styles
+      mode="single" // "single" or "range" mode
+    />
   );
 };
 
 export default App;
-
 ```
 
 ## License
 
 MIT © [Mohammadsd](https://github.com/Mohammadsd1386)
+
+---
+
+### جدول پراپس‌ها به صورت HTML (در صورت نیاز جداگانه)
+
+اگه بخواید جدول رو به صورت HTML داشته باشید (مثلاً برای استفاده در جای دیگه)، این کد رو می‌تونید استفاده کنید:
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>darkMode</code></td>
+      <td><code>boolean</code></td>
+      <td><code>false</code></td>
+      <td>Enables dark mode for the calendar.</td>
+    </tr>
+    <tr>
+      <td><code>value</code></td>
+      <td><code>string</code></td>
+      <td><code>null</code></td>
+      <td>Initial value of the selected date.</td>
+    </tr>
+    <tr>
+      <td><code>onChange</code></td>
+      <td><code>function</code></td>
+      <td><code>() => {}</code></td>
+      <td>Callback function triggered when a date is selected.</td>
+    </tr>
+    <tr>
+      <td><code>responsive</code></td>
+      <td><code>boolean</code></td>
+      <td><code>true</code></td>
+      <td>Makes the calendar responsive to screen size.</td>
+    </tr>
+    <tr>
+      <td><code>animate</code></td>
+      <td><code>boolean</code></td>
+      <td><code>false</code></td>
+      <td>Enables fade-in/out animations for the calendar popup.</td>
+    </tr>
+    <tr>
+      <td><code>inputStyle</code></td>
+      <td><code>object</code></td>
+      <td><code>{}</code></td>
+      <td>Custom styles for the input field.</td>
+    </tr>
+    <tr>
+      <td><code>mode</code></td>
+      <td><code>string</code></td>
+      <td><code>'single'</code></td>
+      <td>Selection mode: <code>'single'</code> for single date, <code>'range'</code> for date range.</td>
+    </tr>
+  </tbody>
+</table>

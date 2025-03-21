@@ -3,15 +3,13 @@ import { format, getDaysInMonth, getMonth, getYear, parse } from "date-fns-jalal
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-
-// اضافه کردن فونت دلخواه
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: 'IranSans';
-    src: url('../src/assets/IRANSansXFaNum-Medium.ttf') 
-  };
+    src: url('../src/assets/IRANSansXFaNum-Medium.ttf');
+  }
   
   body {
     font-family: IranSans;
@@ -19,28 +17,29 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const CalendarContainer = styled(motion.div)`
-  position: relative;
-  max-width: ${(props) => (props.responsive ? "100%" : "23rem")};
-  margin: 2rem auto;
-  padding: 1rem;
-  border-radius: 1rem;
+  position: absolute;
+  max-width: ${(props) => (props.responsive ? "100%" : "18rem")};
+  width: 100%; 
+  margin: 0; 
+  padding: 0.75rem;
+  border-radius: 0.75rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
   color: ${(props) => (props.darkMode ? "#fff" : "#333")};
-  z-index: 100; /* اضافه کردن z-index برای نمایش در بالا */
+  z-index: 100;
 `;
 
 const YearMonthSelector = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   cursor: pointer;
 `;
 
 const SelectorButton = styled.button`
-  font-size: 1.5rem;
-  padding: 0.5rem;
+  font-size: 1.2rem;
+  padding: 0.3rem;
   border-radius: 50%;
   &:hover {
     background-color: ${(props) => (props.darkMode ? "#444" : "#ddd")};
@@ -48,33 +47,36 @@ const SelectorButton = styled.button`
 `;
 
 const MonthYearText = styled.span`
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: bold;
-  margin: 0 -1.5rem;
+  margin: 0 -1rem;
 `;
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
+  gap: 0.3rem;
   text-align: center;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
 `;
 
 const DayCell = styled.div`
-  padding: 0.75rem;
-  margin-top: 5px;
+  padding: 0.5rem;
+  margin-top: 3px;
   cursor: pointer;
-  border-radius: 0.375rem;
+  border-radius: 0.25rem;
   background-color: ${(props) =>
-    props.selected ? "#0B35E0" : "transparent"};
+    props.isHoverRange
+      ? "#d1e7dd" 
+      : props.isInRange
+      ? "#e2e8f0" 
+      : props.selected
+      ? "#0B35E0" 
+      : "transparent"};
   color: ${(props) => {
-    if (props.selected) {
-      return "#fff";
-    }
-    if (props.darkMode) {
-      return "#fff";
-    }
+    if (props.selected) return "#fff";
+    if (props.isHoverRange || props.isInRange) return "#000";
+    if (props.darkMode) return "#fff";
     return "#000";
   }};
 
@@ -88,9 +90,10 @@ const DayCell = styled.div`
 
 const DateText = styled.div`
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   font-weight: bold;
   color: #3182ce;
+  font-size: 0.875rem;
 `;
 
 const YearSelector = styled.div`
@@ -98,7 +101,7 @@ const YearSelector = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 200px;
+  height: 150px;
   width: 80%;
   overflow-y: auto;
   display: flex;
@@ -108,11 +111,11 @@ const YearSelector = styled.div`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px); 
+  backdrop-filter: blur(5px);
 `;
 
 const YearOption = styled.div`
-  padding: 0.75rem;
+  padding: 0.5rem;
   cursor: pointer;
   text-align: center;
   width: 100%;
@@ -127,7 +130,7 @@ const MonthSelector = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 200px;
+  height: 150px;
   width: 80%;
   overflow-y: auto;
   display: flex;
@@ -137,11 +140,11 @@ const MonthSelector = styled.div`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px); 
+  backdrop-filter: blur(5px);
 `;
 
 const MonthOption = styled.div`
-  padding: 0.75rem;
+  padding: 0.5rem;
   cursor: pointer;
   text-align: center;
   width: 100%;
@@ -152,14 +155,15 @@ const MonthOption = styled.div`
 `;
 
 const CalendarInput = styled.input`
-  padding: 0.5rem;
+  padding: 0.4rem;
   border: 1px solid ${(props) => (props.darkMode ? "#333" : "#ccc")};
-  border-radius: 0.5rem;
+  border-radius: 0.4rem;
   background-color: ${(props) => (props.darkMode ? "#2d2d2d" : "#fff")};
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
   cursor: pointer;
   width: 100%;
   text-align: center;
+  font-size: 0.875rem;
 
   &:focus {
     outline: none;
@@ -172,12 +176,16 @@ const PersianCalendar = ({
   onChange = () => {},
   responsive = true,
   animate = false,
-  inputStyle = '',
+  inputStyle = {},
+  mode = 'single',
 }) => {
   const gregorianDate = new Date();
   const persianDate = format(gregorianDate, "yyyy/MM/dd");
   const dayOfMonth = persianDate.split("/")[2];
 
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [hoverDate, setHoverDate] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     value || format(new Date(), "d MMMM yyyy")
   );
@@ -187,31 +195,93 @@ const PersianCalendar = ({
   const [showMonthSelector, setShowMonthSelector] = useState(false);
   const [selectedDay, setSelectedDay] = useState(Number(dayOfMonth));
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
-  const [calendarPosition, setCalendarPosition] = useState("bottom");
+  const [calendarPosition, setCalendarPosition] = useState({ top: "100%", bottom: "auto", left: 0 });
 
-  const months = [
-    "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-    "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
-  ];
+  const datePicker = useRef(null);
+  const calendarRef = useRef(null);
 
   const daysInMonth = (month, year) => {
     const date = parse(`${year}-${month + 1}-01`, "yyyy-MM-dd", new Date());
     return getDaysInMonth(date);
   };
 
-  const handleDateClick = (day) => {
-    setSelectedDay(day);
-    const dateString = `${day} ${months[viewingMonth]} ${viewingYear}`;
-    setSelectedDate(dateString);
+  const isDateInRange = (day) => {
+    if (!startDate || !endDate) return false;
 
-    const gregorianDate = parse(
+    const currentDate = parse(
       `${viewingYear}-${viewingMonth + 1}-${day}`,
       "yyyy-MM-dd",
       new Date()
     );
+    const start = parse(startDate, "yyyy-MM-dd", new Date());
+    const end = parse(endDate, "yyyy-MM-dd", new Date());
 
-    onChange(gregorianDate.toISOString());
-    setIsCalendarVisible(false); 
+    return currentDate >= start && currentDate <= end;
+  };
+
+  const isDateInHoverRange = (day) => {
+    if (!startDate || !hoverDate || endDate) return false;
+
+    const currentDate = parse(
+      `${viewingYear}-${viewingMonth + 1}-${day}`,
+      "yyyy-MM-dd",
+      new Date()
+    );
+    const start = parse(startDate, "yyyy-MM-dd", new Date());
+    const hover = parse(hoverDate, "yyyy-MM-dd", new Date());
+
+    const minDate = start < hover ? start : hover;
+    const maxDate = start < hover ? hover : start;
+
+    return currentDate >= minDate && currentDate <= maxDate;
+  };
+
+  const handleDateClick = (day) => {
+    const dateString = `${viewingYear}-${viewingMonth + 1}-${day}`;
+    const gregorianDate = parse(dateString, "yyyy-MM-dd", new Date());
+    const formattedDate = gregorianDate.toISOString();
+
+    if (mode === 'single') {
+      setSelectedDay(day);
+      setSelectedDate(`${day} ${months[viewingMonth]} ${viewingYear}`);
+      onChange(formattedDate);
+      setIsCalendarVisible(false);
+    } else if (mode === 'range') {
+      if (!startDate || (startDate && endDate)) {
+        setStartDate(dateString);
+        setEndDate(null);
+        setSelectedDate(`${day} ${months[viewingMonth]} ${viewingYear}`);
+      } else if (startDate && !endDate) {
+        const start = parse(startDate, "yyyy-MM-dd", new Date());
+        const current = parse(dateString, "yyyy-MM-dd", new Date());
+
+        if (current < start) {
+          setStartDate(dateString);
+          setEndDate(startDate);
+          onChange({
+            start: formattedDate,
+            end: parse(startDate, "yyyy-MM-dd", new Date()).toISOString(),
+          });
+        } else {
+          setEndDate(dateString);
+          onChange({
+            start: parse(startDate, "yyyy-MM-dd", new Date()).toISOString(),
+            end: formattedDate,
+          });
+        }
+        setIsCalendarVisible(false);
+      }
+    }
+  };
+
+  const handleMouseEnter = (day) => {
+    if (mode === 'range' && startDate && !endDate) {
+      setHoverDate(`${viewingYear}-${viewingMonth + 1}-${day}`);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoverDate(null);
   };
 
   const years = Array.from({ length: 100 }, (_, i) => viewingYear - 50 + i);
@@ -234,19 +304,48 @@ const PersianCalendar = ({
     }
   };
 
-  const datePicker = useRef()
-
   const checkPosition = () => {
-    const calendar = datePicker.current;
-    const rect = calendar.getBoundingClientRect();
-    const screenHeight = window.innerHeight;
-    
-    if (rect.bottom > screenHeight) {
-      setCalendarPosition("top");
-    } else {
-      setCalendarPosition("bottom");
+    if (datePicker.current) {
+      const rect = datePicker.current.getBoundingClientRect();
+      const screenHeight = window.innerHeight;
+      const screenWidth = window.innerWidth;
+
+      let position = { top: "100%", bottom: "auto", left: 0 };
+      if (rect.bottom + 250 > screenHeight) { 
+        position.top = "auto";
+        position.bottom = "100%";
+      }
+
+      if (rect.left < 0) {
+        position.left = -rect.left;
+      } else if (rect.right > screenWidth) {
+        position.left = screenWidth - rect.right;
+      }
+
+      setCalendarPosition(position);
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        datePicker.current &&
+        calendarRef.current &&
+        !datePicker.current.contains(event.target) &&
+        !calendarRef.current.contains(event.target)
+      ) {
+        setIsCalendarVisible(false);
+      }
+    };
+
+    if (isCalendarVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isCalendarVisible]);
 
   useEffect(() => {
     if (value) {
@@ -254,23 +353,29 @@ const PersianCalendar = ({
     }
   }, [value]);
 
+  const months = [
+    "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
+    "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
+  ];
+
   return (
-    <div>
-      <GlobalStyle /> {/* استفاده از فونت */}
+    <div style={{ position: "relative" }}>
+      <GlobalStyle />
       <CalendarInput
         ref={datePicker}
-        value={selectedDate}
+        value={mode === 'range' && startDate && endDate ? `${startDate} - ${endDate}` : selectedDate}
         style={inputStyle}
         darkMode={darkMode}
         onClick={() => {
           setIsCalendarVisible(true);
           checkPosition();
-        }} 
-        readOnly 
+        }}
+        readOnly
       />
 
       {isCalendarVisible && (
         <CalendarContainer
+          ref={calendarRef}
           responsive={responsive}
           darkMode={darkMode}
           id="calendar"
@@ -278,7 +383,11 @@ const PersianCalendar = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: animate ? 0.3 : 0 }}
-          style={{ top: calendarPosition === "top" ? "auto" : "100%", bottom: calendarPosition === "top" ? "100%" : "auto" }}
+          style={{
+              top: calendarPosition.top,
+              bottom: calendarPosition.bottom,
+              left: calendarPosition.left,
+          }}
         >
           {showYearSelector && (
             <YearSelector>
@@ -341,13 +450,30 @@ const PersianCalendar = ({
             {Array.from({ length: daysInMonth(viewingMonth, viewingYear) }).map(
               (_, index) => {
                 const day = index + 1;
-                const isSelected = day === selectedDay;
+                const isSelected =
+                  mode === 'single'
+                    ? day === selectedDay
+                    : (startDate &&
+                        parse(startDate, "yyyy-MM-dd", new Date()).getDate() === day &&
+                        parse(startDate, "yyyy-MM-dd", new Date()).getMonth() === viewingMonth &&
+                        parse(startDate, "yyyy-MM-dd", new Date()).getFullYear() === viewingYear) ||
+                      (endDate &&
+                        parse(endDate, "yyyy-MM-dd", new Date()).getDate() === day &&
+                        parse(endDate, "yyyy-MM-dd", new Date()).getMonth() === viewingMonth &&
+                        parse(endDate, "yyyy-MM-dd", new Date()).getFullYear() === viewingYear);
+                const isInRange = mode === 'range' && isDateInRange(day);
+                const isHoverRange = mode === 'range' && isDateInHoverRange(day);
+
                 return (
                   <DayCell
                     darkMode={darkMode}
                     key={day}
                     selected={isSelected}
+                    isInRange={isInRange}
+                    isHoverRange={isHoverRange}
                     onClick={() => handleDateClick(day)}
+                    onMouseEnter={() => handleMouseEnter(day)}
+                    onMouseLeave={handleMouseLeave}
                   >
                     {day}
                   </DayCell>
