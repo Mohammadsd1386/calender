@@ -33,12 +33,6 @@ const App = () => {
 export default App;
 ```
 
-## License
-
-MIT © [Mohammadsd](https://github.com/Mohammadsd1386)
-
----
-
 ### جدول پراپس‌ها به صورت HTML (در صورت نیاز جداگانه)
 
 اگه بخواید جدول رو به صورت HTML داشته باشید (مثلاً برای استفاده در جای دیگه)، این کد رو می‌تونید استفاده کنید:
@@ -98,3 +92,8 @@ MIT © [Mohammadsd](https://github.com/Mohammadsd1386)
     </tr>
   </tbody>
 </table>
+## License
+
+MIT © [Mohammadsd](https://github.com/Mohammadsd1386)
+
+---
