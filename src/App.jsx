@@ -4,7 +4,7 @@ function App() {
 
   return (
     // wrapper 
-    <div style={{width:"300px"}}>
+    <div style={{width:"300px" }}>
     <PersianCalendar
       darkMode={false}
       responsive={false} 
