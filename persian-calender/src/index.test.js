@@ -1,4 +1,4 @@
-import  PersianCalendar  from '.'
+import  PersianCalendar  from './index'
 
 describe('PersianCalendar', () => {
   it('is truthy', () => {
