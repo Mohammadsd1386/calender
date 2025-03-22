@@ -12,6 +12,8 @@ function App() {
       animate={true}
       inputStyle={{ width: '100px', height: '50px' }}
       mode='range'
+      showHolidays={true}
+      theme='galactic'
       />
     </div>
 
