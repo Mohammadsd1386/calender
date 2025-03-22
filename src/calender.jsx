@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { createGlobalStyle } from "styled-components";
 
-// فونت دلخواه
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: 'IranSans';
@@ -17,7 +16,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// تعریف تم‌ها
 const themes = {
   default: {
     background: "#ffffff",
@@ -86,7 +84,6 @@ const themes = {
   },
 };
 
-// استایل‌های تقویم
 const CalendarContainer = styled(motion.div)`
   position: absolute;
   max-width: ${(props) => (props.responsive ? "100%" : "18rem")};
@@ -278,7 +275,6 @@ const CalendarInput = styled.input`
   }
 `;
 
-// لیست تعطیلات رسمی ایران
 const holidays = [
   { date: "1-1", reason: "نوروز" },
   { date: "1-2", reason: "نوروز" },

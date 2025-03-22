@@ -33,13 +33,23 @@ const App = () => {
 export default App;
 ```
 ### تم ها
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+  <img src="http://sotpay.liara.run/files/upload/image-1742643375999.png" width="100" />
+  <img src="http://sotpay.liara.run/files/upload/image-1742643408391.png" width="100" />
+  <img src="http://sotpay.liara.run/files/upload/image-1742643435387.png" width="100" />
+  <img src="http://sotpay.liara.run/files/upload/image-1742643453695.png" width="100" />
+  <img src="http://sotpay.liara.run/files/upload/image-1742643466359.png" width="100" />
+  <img src="http://sotpay.liara.run/files/upload/image-1742643476909.png" width="100" />
+</div>
 
-<img src="./dist/1.png" />
-<img src="./dist/2.png" />
-<img src="./dist/3.png" />
-<img src="./dist/4.png" />
-<img src="./dist/5.png" />
-<img src="./dist/6.png" />
+
+### آخرین تغییرات
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; flex-direction: column;">
+<li>نشان دادن روز های تعطیل سال</li>
+<li>افزودن تم های مختلف</li>
+<li>بهینه سازی</li>
+</div>
+
 
 ### جدول پراپس
 
@@ -73,7 +83,6 @@ export default App;
       <td><code>default</code></td>
       <td>default | green | red | elegant | galactic</td>
     </tr>
-    
     <tr>
       <td><code>value</code></td>
       <td><code>string</code></td>
