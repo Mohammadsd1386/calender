@@ -4,16 +4,14 @@ function App() {
 
   return (
     // wrapper 
-    <div style={{width:"300px" }}>
+    <div style={{width:"300px", margin:"auto" }}>
     <PersianCalendar
-      darkMode={false}
+      darkMode={true}
       responsive={false} 
       onChange={(date) => console.log(date)} 
       animate={true}
-      inputStyle={{ width: '100px', height: '50px' }}
       mode='range'
       showHolidays={true}
-      theme='galactic'
       />
     </div>
 

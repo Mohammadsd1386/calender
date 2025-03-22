@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { createGlobalStyle } from "styled-components";
 
+// فونت دلخواه
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: 'IranSans';
@@ -22,54 +23,70 @@ const themes = {
     background: "#ffffff",
     text: "#333333",
     selected: "#0B35E0",
+    selectedText: "#ffffff",
     hoverRange: "#d1e7dd",
     inRange: "#e2e8f0",
-    holiday: "#ff0000",
+    holiday: "rgba(255, 0, 0, 0.2)",
+    holidayText: "#d32f2f",
     hover: "#e2e8f0",
+    hoverText: "#333333",
     border: "1px solid #cccccc",
   },
   galactic: {
-    background: "linear-gradient(135deg, #1e1e2f 0%, #2e2e4f 100%)", 
-    text: "green", 
-    selected: "#ff00ff", 
+    background: "linear-gradient(135deg, #1e1e2f 0%, #2e2e4f 100%)",
+    text: "#d0d0ff",
+    selected: "#ff00ff",
+    selectedText: "#ffffff",
     hoverRange: "#3b3b6d",
     inRange: "#4a4a8f",
-    holiday: "#ff4444",
-    hover: "#333",
+    holiday: "rgba(255, 68, 68, 0.3)",
+    holidayText: "#ff6666",
+    hover: "#3b3b6d",
+    hoverText: "#e0e0ff",
     border: "1px solid #4444aa",
   },
   elegant: {
-    background: "#f9f9f9", 
-    text: "#555555", 
-    selected: "#6200ea", 
+    background: "#f9f9f9",
+    text: "#555555",
+    selected: "#6200ea",
+    selectedText: "#ffffff",
     hoverRange: "#ede7f6",
     inRange: "#e8eaf6",
-    holiday: "#d81b60", 
+    holiday: "rgba(216, 27, 96, 0.2)",
+    holidayText: "#d81b60",
     hover: "#e0e0e0",
+    hoverText: "#555555",
     border: "1px solid #e0e0e0",
   },
   red: {
-    background: "#ffebee", 
-    text: "#c62828", 
-    selected: "#d32f2f", 
+    background: "#ffebee",
+    text: "#c62828",
+    selected: "#d32f2f",
+    selectedText: "#ffffff",
     hoverRange: "#ffcdd2",
     inRange: "#ef9a9a",
-    holiday: "#b71c1c", 
+    holiday: "rgba(183, 28, 28, 0.3)",
+    holidayText: "#b71c1c",
     hover: "#ef5350",
+    hoverText: "#ffffff",
     border: "1px solid #ef5350",
   },
   green: {
-    background: "#e8f5e9", 
-    text: "#2e7d32", 
-    selected: "#388e3c", 
+    background: "#e8f5e9",
+    text: "#2e7d32",
+    selected: "#388e3c",
+    selectedText: "#ffffff",
     hoverRange: "#c8e6c9",
     inRange: "#a5d6a7",
-    holiday: "#d32f2f", 
+    holiday: "rgba(211, 47, 47, 0.2)",
+    holidayText: "#d32f2f",
     hover: "#81c784",
+    hoverText: "#ffffff",
     border: "1px solid #66bb6a",
   },
 };
 
+// استایل‌های تقویم
 const CalendarContainer = styled(motion.div)`
   position: absolute;
   max-width: ${(props) => (props.responsive ? "100%" : "18rem")};
@@ -102,6 +119,7 @@ const SelectorButton = styled.button`
   color: ${(props) => (props.darkMode ? "#fff" : props.theme.text)};
   &:hover {
     background-color: ${(props) => (props.darkMode ? "#444" : props.theme.hover)};
+    color: ${(props) => (props.darkMode ? "#fff" : props.theme.hoverText)};
   }
 `;
 
@@ -137,7 +155,8 @@ const DayCell = styled.div`
       ? props.theme.selected
       : "transparent"};
   color: ${(props) => {
-    if (props.selected) return "#fff";
+    if (props.isHoliday && props.showHolidays) return props.theme.holidayText;
+    if (props.selected) return props.theme.selectedText;
     if (props.isHoverRange || props.isInRange) return "#000";
     if (props.darkMode) return "#fff";
     return props.theme.text;
@@ -153,7 +172,13 @@ const DayCell = styled.div`
         ? "#444"
         : props.theme.hover};
     color: ${(props) =>
-      props.selected ? "#fff" : props.darkMode ? "#fff" : props.theme.text};
+      props.selected
+        ? props.theme.selectedText
+        : props.isHoliday && props.showHolidays
+        ? props.theme.holidayText
+        : props.darkMode
+        ? "#fff"
+        : props.theme.hoverText};
   }
 
   &:hover .tooltip {
@@ -252,6 +277,8 @@ const CalendarInput = styled.input`
     outline: none;
   }
 `;
+
+// لیست تعطیلات رسمی ایران
 const holidays = [
   { date: "1-1", reason: "نوروز" },
   { date: "1-2", reason: "نوروز" },
@@ -282,8 +309,8 @@ const PersianCalendar = ({
   animate = false,
   inputStyle = {},
   mode = "single",
-  showHolidays = false, 
-  theme = "default", 
+  showHolidays = false,
+  theme = "default",
 }) => {
   const gregorianDate = new Date();
   const persianDate = format(gregorianDate, "yyyy/MM/dd");

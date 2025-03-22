@@ -32,6 +32,14 @@ const App = () => {
 
 export default App;
 ```
+### تم ها
+
+<img src="./dist/1.png" />
+<img src="./dist/2.png" />
+<img src="./dist/3.png" />
+<img src="./dist/4.png" />
+<img src="./dist/5.png" />
+<img src="./dist/6.png" />
 
 ### جدول پراپس
 
@@ -52,6 +60,20 @@ export default App;
       <td><code>false</code></td>
       <td>Enables dark mode for the calendar.</td>
     </tr>
+    <tr>
+    <tr>
+      <td><code>showHolidays</code></td>
+      <td><code>boolean</code></td>
+      <td><code>false</code></td>
+      <td>show iranian holidays.</td>
+    </tr>
+    <tr>
+      <td><code>theme</code></td>
+      <td><code>string</code></td>
+      <td><code>default</code></td>
+      <td>default | green | red | elegant | galactic</td>
+    </tr>
+    
     <tr>
       <td><code>value</code></td>
       <td><code>string</code></td>
