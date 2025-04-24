@@ -1,6 +1,6 @@
 {
   "name": "persian-calender",
-  "version": "1.2.10",
+  "version": "1.2.13",
   "description": "this pkg to Easy",
   "author": "Mohammadsd1386",
   "license": "MIT",
@@ -47,8 +47,7 @@
     "prettier": "^2.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.1",
-    "tailwindcss": "^3.4.17"
+    "react-scripts": "^3.4.1"
   },
   "files": [
     "dist"
