@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { format, getDaysInMonth, getMonth, getYear, parse } from "date-fns-jalali";
+import { format, getDaysInMonth, getMonth, getYear, parse, startOfMonth, getDay } from "date-fns-jalali";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -280,20 +280,27 @@ const holidays = [
   { date: "1-2", reason: "نوروز" },
   { date: "1-3", reason: "نوروز" },
   { date: "1-4", reason: "نوروز" },
-  { date: "1-12", reason: "روز طبیعت (سیزده‌به‌در)" },
-  { date: "1-14", reason: "درگذشت حضرت خدیجه" },
+  { date: "1-8", reason: "روز جهانی قدس" },
+  { date: "1-11", reason: "عید سعید فطر" },
+  { date: "1-12", reason: "روز جمهوری اسلامی" },
+  { date: "1-13", reason: "روز طبیعت (سیزده‌به‌در)" },
+  { date: "2-4", reason: "شهادت امام جعفر" },
   { date: "3-14", reason: "رحلت امام خمینی" },
   { date: "3-15", reason: "قیام ۱۵ خرداد" },
-  { date: "4-7", reason: "شهادت امام محمدباقر" },
-  { date: "5-5", reason: "شهادت امام محمدتقی" },
-  { date: "6-20", reason: "شهادت امام جعفر صادق" },
-  { date: "7-28", reason: "تاسوعا" },
-  { date: "7-29", reason: "عاشورا" },
-  { date: "9-8", reason: "اربعین حسینی" },
-  { date: "9-16", reason: "رحلت پیامبر و شهادت امام حسن مجتبی" },
-  { date: "9-18", reason: "شهادت امام رضا" },
-  { date: "11-8", reason: "شهادت امام حسن عسکری" },
-  { date: "12-22", reason: "پیروزی انقلاب اسلامی" },
+  { date: "3-16", reason: "عید سعید فطر" },
+  { date: "3-24", reason: "عید سعید غدیر" },
+  { date: "4-14", reason: "تاسوعا حسینی" },
+  { date: "4-15", reason: "عاشورا حسینی" },
+  { date: "5-23", reason: "اربعین" },
+  { date: "5-31", reason: "رحلت رسول اکرم" },
+  { date: "6-2", reason: "شهادت امام رضا" },
+  { date: "6-19", reason: "ولادت حضرت رسول" },
+  { date: "8-3", reason: "شهادت حضرت فاطمه" },
+  { date: "9-13", reason: "ولادت حضرت علی" },
+  { date: "9-27", reason: "مبعث رسول اکرم" },
+  { date: "10-15", reason: "ولادت حضرت مهدی" },
+  { date: "11-22", reason: "پیروزی انقلاب اسلامی" },
+  { date: "12-20", reason: "شهادت امام علی" },
   { date: "12-29", reason: "روز ملی شدن صنعت نفت" },
 ];
 
@@ -333,9 +340,21 @@ const PersianCalendar = ({
   const datePicker = useRef(null);
   const calendarRef = useRef(null);
 
+  const isLeapYear = (year) => {
+    const cycle = (year - 1379) % 33;
+    return [1, 5, 9, 13, 17, 21, 25, 29].includes(cycle);
+  };
+
   const daysInMonth = (month, year) => {
+    if (month < 6) return 31; 
+    if (month < 11) return 30; 
+    return isLeapYear(year) ? 30 : 29; 
+  };
+
+  const getFirstDayOfMonth = (month, year) => {
     const date = parse(`${year}-${month + 1}-01`, "yyyy-MM-dd", new Date());
-    return getDaysInMonth(date);
+    const dayOfWeek = getDay(date);
+    return (dayOfWeek + 1) % 7;
   };
 
   const isDateInRange = (day) => {
@@ -508,6 +527,9 @@ const PersianCalendar = ({
 
   const selectedTheme = themes[theme] || themes.default;
 
+  const firstDayOfMonth = getFirstDayOfMonth(viewingMonth, viewingYear);
+  const daysInCurrentMonth = daysInMonth(viewingMonth, viewingYear);
+
   return (
     <div dir="rtl" style={{ position: "relative" }}>
       <GlobalStyle />
@@ -619,55 +641,57 @@ const PersianCalendar = ({
           </Grid>
 
           <Grid>
-            {Array.from({ length: daysInMonth(viewingMonth, viewingYear) }).map(
-              (_, index) => {
-                const day = index + 1;
-                const isSelected =
-                  mode === "single"
-                    ? day === selectedDay
-                    : (startDate &&
-                        parse(startDate, "yyyy-MM-dd", new Date()).getDate() ===
-                          day &&
-                        parse(startDate, "yyyy-MM-dd", new Date()).getMonth() ===
-                          viewingMonth &&
-                        parse(
-                          startDate,
-                          "yyyy-MM-dd",
-                          new Date()
-                        ).getFullYear() === viewingYear) ||
-                      (endDate &&
-                        parse(endDate, "yyyy-MM-dd", new Date()).getDate() ===
-                          day &&
-                        parse(endDate, "yyyy-MM-dd", new Date()).getMonth() ===
-                          viewingMonth &&
-                        parse(endDate, "yyyy-MM-dd", new Date()).getFullYear() ===
-                          viewingYear);
-                const isInRange = mode === "range" && isDateInRange(day);
-                const isHoverRange = mode === "range" && isDateInHoverRange(day);
-                const holiday = isHoliday(day);
+            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+              <DayCell key={`empty-${index}`} style={{ visibility: "hidden" }} />
+            ))}
 
-                return (
-                  <DayCell
-                    darkMode={darkMode}
-                    theme={selectedTheme}
-                    key={day}
-                    selected={isSelected}
-                    isInRange={isInRange}
-                    isHoverRange={isHoverRange}
-                    isHoliday={!!holiday}
-                    showHolidays={showHolidays}
-                    onClick={() => handleDateClick(day)}
-                    onMouseEnter={() => handleMouseEnter(day)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {holiday && showHolidays && (
-                      <Tooltip className="tooltip">{holiday.reason}</Tooltip>
-                    )}
-                    {day}
-                  </DayCell>
-                );
-              }
-            )}
+            {Array.from({ length: daysInCurrentMonth }).map((_, index) => {
+              const day = index + 1;
+              const isSelected =
+                mode === "single"
+                  ? day === selectedDay
+                  : (startDate &&
+                      parse(startDate, "yyyy-MM-dd", new Date()).getDate() ===
+                        day &&
+                      parse(startDate, "yyyy-MM-dd", new Date()).getMonth() ===
+                        viewingMonth &&
+                      parse(
+                        startDate,
+                        "yyyy-MM-dd",
+                        new Date()
+                      ).getFullYear() === viewingYear) ||
+                    (endDate &&
+                      parse(endDate, "yyyy-MM-dd", new Date()).getDate() ===
+                        day &&
+                      parse(endDate, "yyyy-MM-dd", new Date()).getMonth() ===
+                        viewingMonth &&
+                      parse(endDate, "yyyy-MM-dd", new Date()).getFullYear() ===
+                        viewingYear);
+              const isInRange = mode === "range" && isDateInRange(day);
+              const isHoverRange = mode === "range" && isDateInHoverRange(day);
+              const holiday = isHoliday(day);
+
+              return (
+                <DayCell
+                  darkMode={darkMode}
+                  theme={selectedTheme}
+                  key={day}
+                  selected={isSelected}
+                  isInRange={isInRange}
+                  isHoverRange={isHoverRange}
+                  isHoliday={!!holiday}
+                  showHolidays={showHolidays}
+                  onClick={() => handleDateClick(day)}
+                  onMouseEnter={() => handleMouseEnter(day)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {holiday && showHolidays && (
+                    <Tooltip className="tooltip">{holiday.reason}</Tooltip>
+                  )}
+                  {day}
+                </DayCell>
+              );
+            })}
           </Grid>
         </CalendarContainer>
       )}

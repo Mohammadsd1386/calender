@@ -47,7 +47,9 @@ export default App;
 
 ### آخرین تغییرات
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; flex-direction: column;">
-<li>نشان دادن روز های تعطیل سال</li>
+<li>نشان دادن تمام روز های تعطیل سال</li>
+<li>افزودن سال کبیسه</li>
+<li>سینک کامل با تقویم اصلی</li>
 <li>افزودن تم های مختلف</li>
 <li>بهینه سازی</li>
 </div>
